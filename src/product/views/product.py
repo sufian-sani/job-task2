@@ -1,6 +1,6 @@
 from django.views import generic
 
-from product.models import Variant
+from product.models import Variant, Product
 
 
 class CreateProductView(generic.TemplateView):
