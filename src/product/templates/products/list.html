@@ -11,6 +11,7 @@
 
     <div class="card">
         <form action="" method="get" class="card-header">
+            {% csrf_token %}
             <div class="form-row justify-content-between">
                 <div class="col-md-2">
                     <input type="text" name="title" placeholder="Product Title" class="form-control">
@@ -63,7 +64,7 @@
                         <td>{{i.description}}</td>
                         <td>
                             <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant-{{forloop.counter0 }}">
-                                {% for j in i.product_varient_price %}
+                                {% for j in i.productvariantprice_set.all %}
                                 <dt class="col-sm-3 pb-0">
                                     {{j.product_variant_two.variant_title}} / {{j.product_variant_one.variant_title}} / {{j.product_variant_three.variant_title}}
                                 </dt>
