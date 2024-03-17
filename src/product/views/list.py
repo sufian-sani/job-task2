@@ -29,8 +29,11 @@ class ProductListView(generic.ListView):
 				if date:
 					queryset = queryset.filter(created_at__date=date)
 				if price_from:
-					breakpoint()
-					i._prefetched_objects_cache['productvariantprice_set'].filter(price__gte=price_from)
+					# breakpoint()
+					# return queryset.filter(productvariantprice__price__lte=price_from)
+					# queryset = [i.productvariantprice_set.filter(price__gte=price_from) for i in queryset]
+					# queryset=queryset.prefetch_related('productvariantprice_set').filter(productvariantprice__price__gte=price_from)
+					# i._prefetched_objects_cache['productvariantprice_set'].filter(price__gte=price_from)
 					# queryset.filter(productvariantprice_set__price__gte=price_from)
 					# queryset = [variant for product in queryset for variant in product.productvariantprice_set.filter(price__gte=price_from)]
 					# queryset.annotate(
@@ -43,19 +46,19 @@ class ProductListView(generic.ListView):
 					# queryset = queryset.filter(productvariantprice__price__gte=price_from)
 					# queryset = queryset(self.productvariantprice_set.filter(price__gte=price_from))
 					# queryset = queryset.productvariantprice_set.all().filter(price__gte=price_from)
-					for i in queryset:
-						# breakpoint()
-						i.productvariantprice_set.filter(price__gte=price_from)
+					# for i in queryset:
+					# 	# breakpoint()
+					# 	i.productvariantprice_set.filter(price__gte=price_from)
 						# breakpoint()
 					# queryset = queryset.productvariantprice_set.filter(price__gte=price_from)
-				if price_to:
-					for i in queryset:
-						i.productvariantprice_set.filter(price__lte=price_to)
+				# if price_to:
+				# 	for i in queryset:
+				# 		i.productvariantprice_set.filter(price__lte=price_to)
 					# queryset = queryset.filter(productvariantprice__price__lte=price_to)
 		except Exception as e:
 			pass
 
-		breakpoint()
+		# breakpoint()
 
 		# form = self.form_class(self.request.GET)
 		# breakpoint()
