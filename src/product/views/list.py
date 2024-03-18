@@ -1,17 +1,18 @@
 from django.views import generic
 from product.models import Product, Variant, ProductVariantPrice, ProductVariant
 from ..forms import ProductFilterForm
+from django.db.models import Prefetch
 from django.db.models import Q
-from django.db.models import OuterRef, Subquery
+# from django.db.models import OuterRef, Subquery
 class ProductListView(generic.ListView):
 	model = Product
 	template_name = 'products/list.html'
-	paginate_by = 2
+	paginate_by = 6
 	form_class = ProductFilterForm
 
 	def get_queryset(self):
 		queryset = super().get_queryset()
-		queryset = queryset.prefetch_related('productvariantprice_set').all()
+		# queryset = queryset.prefetch_related('productvariantprice_set').all()
 
 		# for product in queryset:
 		# 	product_varient_price=product.productvariantprice_set.all()
@@ -28,33 +29,22 @@ class ProductListView(generic.ListView):
 					queryset = queryset.filter(title__icontains=title)
 				if date:
 					queryset = queryset.filter(created_at__date=date)
-				if price_from:
-					# breakpoint()
-					# return queryset.filter(productvariantprice__price__lte=price_from)
-					# queryset = [i.productvariantprice_set.filter(price__gte=price_from) for i in queryset]
-					# queryset=queryset.prefetch_related('productvariantprice_set').filter(productvariantprice__price__gte=price_from)
-					# i._prefetched_objects_cache['productvariantprice_set'].filter(price__gte=price_from)
-					# queryset.filter(productvariantprice_set__price__gte=price_from)
-					# queryset = [variant for product in queryset for variant in product.productvariantprice_set.filter(price__gte=price_from)]
-					# queryset.annotate(
-					# 	prices=models.Prefetch('productvariantprice_set', queryset=Q(price__gte=price_from))
-					# )
-					# new_queryset = [obj for obj in queryset if
-					#                 obj.productvariantprice_set.filter(price__gte=price_from)]
-					# queryset = queryset.filter(pk__in=[obj.pk for obj in new_queryset])
-					# breakpoint()
-					# queryset = queryset.filter(productvariantprice__price__gte=price_from)
-					# queryset = queryset(self.productvariantprice_set.filter(price__gte=price_from))
-					# queryset = queryset.productvariantprice_set.all().filter(price__gte=price_from)
-					# for i in queryset:
-					# 	# breakpoint()
-					# 	i.productvariantprice_set.filter(price__gte=price_from)
+				if price_from or price_to:
+					if price_from:
 						# breakpoint()
-					# queryset = queryset.productvariantprice_set.filter(price__gte=price_from)
-				# if price_to:
-				# 	for i in queryset:
-				# 		i.productvariantprice_set.filter(price__lte=price_to)
-					# queryset = queryset.filter(productvariantprice__price__lte=price_to)
+						queryset = queryset.prefetch_related(
+										Prefetch('productvariantprice_set', queryset=ProductVariantPrice.objects.filter(price__gte=price_from)))
+					elif price_to:
+						# breakpoint()
+						queryset = queryset.prefetch_related(
+									Prefetch('productvariantprice_set',queryset=ProductVariantPrice.objects.filter(price__lte=price_to)))
+					else:
+						queryset = queryset.prefetch_related(
+									Prefetch('productvariantprice_set',queryset=ProductVariantPrice.objects.filter(Q(price__gte=price_from) & Q(price__lte=price_to))))
+
+					# 	for i in queryset:
+					# 		i.productvariantprice_set.filter(price__lte=price_to)
+						# queryset = queryset.filter(productvariantprice__price__lte=price_to)
 		except Exception as e:
 			pass
 
